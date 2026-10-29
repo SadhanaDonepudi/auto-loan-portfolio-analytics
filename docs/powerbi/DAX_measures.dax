@@ -1,0 +1,16 @@
+// Power BI DAX measures for the Auto Loan Portfolio model (table: Loans)
+Total Loans = COUNTROWS ( Loans )
+Total Balance = SUM ( Loans[orig_balance] )
+Delinquency Rate 60D = DIVIDE ( SUM ( Loans[is_60d_delinquent] ), [Total Loans] )
+Delinquency Rate 30D = DIVIDE ( SUM ( Loans[is_30d_delinquent] ), [Total Loans] )
+Prepayment Rate = DIVIDE ( SUM ( Loans[prepaid] ), [Total Loans] )
+Average Credit Score = AVERAGE ( Loans[credit_score] )
+Average Interest Rate = AVERAGE ( Loans[interest_rate] )
+High Risk Loans = CALCULATE ( [Total Loans], Loans[term_months] >= 72, Loans[credit_score] < 640 )
+High Risk Delinquency Rate 60D =
+    DIVIDE (
+        CALCULATE ( SUM ( Loans[is_60d_delinquent] ), Loans[term_months] >= 72, Loans[credit_score] < 640 ),
+        [High Risk Loans]
+    )
+Delinquency Ratio High Risk vs Other =
+    DIVIDE ( [High Risk Delinquency Rate 60D], [Delinquency Rate 60D] )
